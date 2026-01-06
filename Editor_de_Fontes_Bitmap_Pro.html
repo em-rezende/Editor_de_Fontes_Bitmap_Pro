@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor Bitmap PRO - Expansão de Topo</title>
+    <title>Editor Bitmap PRO - Versão Otimizada</title>
     
     <style>
         /* CONFIGURAÇÕES GERAIS */
@@ -11,39 +11,33 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 20px; 
             background: #f0f2f5; 
-            user-select: none; /* Bloqueia seleção de texto para não atrapalhar o desenho na grade */
+            user-select: none;
         }
 
-        /* LAYOUT PRINCIPAL 
-           Gerencia a disposição dos painéis (Editor vs Previews/Ajuda)
-        */
         .container {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap; /* Permite empilhamento vertical em telas pequenas */
+            flex-wrap: wrap;
             align-items: flex-start;
         }
 
-        /* PAINEL DA ESQUERDA (Área de Edição) */
         .panel {
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            flex: 1;             /* Proporção 1 de 2 */
-            min-width: 400px;    /* Largura mínima antes de quebrar para baixo */
+            flex: 1;
+            min-width: 450px;
         }
 
-        /* PAINEL DA DIREITA (Previews e Documentação) */
         .side-panel {
-            flex: 1;             /* Proporção 1 de 2 (Mantém 50/50 com o painel esquerdo) */
+            flex: 1;
             min-width: 400px; 
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        /* TIPOGRAFIA E CAMPOS */
         h3 { margin: 0 0 10px 0; color: #007bff; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
         textarea {
@@ -55,10 +49,9 @@
             border-radius: 4px; 
             padding: 10px; 
             box-sizing: border-box;
-            user-select: text; /* Permite copiar o código gerado */
+            user-select: text;
         }
 
-        /* CONTROLES E BOTÕES */
         .controls-row {
             margin: 10px 0; 
             display: flex; 
@@ -83,7 +76,6 @@
 
         button:hover { background: #0056b3; }
 
-        /* GRADE DO EDITOR */
         .editor-wrapper {
             background: #1a1a1a; 
             padding: 30px; 
@@ -105,10 +97,9 @@
 
         .pixel.on { 
             background: #00d4ff; 
-            box-shadow: 0 0 8px #00d4ff; /* Efeito Neon */
+            box-shadow: 0 0 8px #00d4ff;
         }
 
-        /* LISTA DE PREVIEWS */
         .chars-list {
             display: flex; 
             flex-wrap: wrap; 
@@ -123,28 +114,33 @@
         .char-item {
             background: white; border: 2px solid transparent; 
             padding: 8px; cursor: pointer; border-radius: 4px;
+            transition: 0.2s;
         }
 
-        .char-item.selected { border-color: #007bff; background: #e1f0ff; }
+        .char-item.selected { border-color: #007bff; background: #e1f0ff; transform: scale(1.05); }
 
         .mini-grid { display: grid; gap: 1px; background: #222; padding: 2px; pointer-events: none; }
         .mini-px { width: 5px; height: 5px; background: #444; }
         .mini-px.on { background: #007bff; }
 
-        /* AJUDA LATERAL */
         .help-box { 
             font-size: 13px; line-height: 1.5; color: #444; background: #fff; 
             padding: 15px; border-radius: 8px; border-left: 4px solid #007bff; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
         }
-        .help-box h4 { margin: 10px 0 5px 0; color: #6f42c1; text-transform: uppercase; }
 
-        /* OUTPUT FINAL */
         #outputCode {
-            background: #282c34; color: #61dafb; padding: 15px; 
+            background: #282c34; color: #abb2bf; padding: 15px; 
+            font-family: 'Fira Code', monospace;
             font-size: 12px; border-radius: 5px; overflow-x: auto; 
-            margin-top: 10px; user-select: text; border-left: 5px solid #28a745; 
+            margin-top: 10px; user-select: text; border-left: 5px solid #28a745;
+            white-space: pre-wrap;
         }
+
+        .keyword { color: #c678dd; }
+        .type { color: #e5c07b; }
+        .number { color: #d19a66; }
+        .comment { color: #5c6370; font-style: italic; }
 
         .move-btns { display: flex; gap: 5px; }
         .btn-move { background: #6f42c1; }
@@ -153,32 +149,28 @@
 <body>
 
 <div style="margin-left: 20px; margin-bottom: 20px;">
-    <h3 style="margin: 0;">Editor de Fontes Bitmap PRO</h3>
-    <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+    <h3 style="margin: 0;">Editor de Fontes Bitmap PRO <span style="font-size: 12px; color: #28a745;">v2.0 - Padding Ativo</span></h3>
+	<p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
         Ferramenta para criação de fontes em sistemas embarcados e Arduino 😁 Criado por Ezequiel M. Rezende + Deepseek + Gemini
     </p> 
 </div>
 
 <div class="container">
     <div class="panel">
-        <h3 style="font-size: 16px; margin-top:0; border-bottom: 1px solid #eee; padding-bottom: 5px;">Código C++ (PROGMEM)</h3>
-        <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
-        Copie e cole seu código C++ na caixa abaixo e clique em "Carregar Código"
-        </p>
+        <h3 style="font-size: 16px;">Entrada de Código C++</h3>
         <textarea id="inputSource" placeholder="Cole seu código PROGMEM aqui...">
-const uint8_t dig6x8[] PROGMEM = {7,
-  6, 0x7E, 0xFF, 0x81, 0x81, 0xFF, 0x7E, // #0
-  6, 0x00, 0x82, 0xFF, 0xFF, 0x80, 0x00, // #1
-  6, 0xC2, 0xE3, 0xB1, 0x99, 0x8F, 0x86, // #2
-  6, 0x42, 0xC3, 0x89, 0x89, 0xFF, 0x76, // #3
-  6, 0x38, 0x3C, 0x26, 0x23, 0xFF, 0xFF, // #4
-  6, 0x4F, 0xCF, 0x89, 0x89, 0xF9, 0x71, // #5
-  6, 0x7E, 0xFF, 0x89, 0x89, 0xFB, 0x72, // #6
-  6, 0x01, 0x01, 0xF1, 0xF9, 0x0F, 0x07, // #7
-  6, 0x76, 0xFF, 0x89, 0x89, 0xFF, 0x76, // #8
-  6, 0x4E, 0xDF, 0x91, 0x91, 0xFF, 0x7E, // #9
+const uint8_t font_emr[] PROGMEM = {5,
+  4, 0x3E, 0x41, 0x41, 0x3E, // 0
+  3, 0x42, 0x7F, 0x40, 0x00, // 1
+  4, 0x62, 0x51, 0x49, 0x46, // 2
+  4, 0x22, 0x41, 0x49, 0x36, // 3
+  4, 0x18, 0x14, 0x12, 0x7F, // 4
+  4, 0x27, 0x45, 0x45, 0x39, // 5
+  4, 0x3E, 0x49, 0x49, 0x32, // 6
+  4, 0x61, 0x11, 0x09, 0x07, // 7
+  4, 0x36, 0x49, 0x49, 0x36, // 8
+  4, 0x26, 0x49, 0x49, 0x3E, // 9
 };
-
 </textarea>
 
         <div class="controls-row">
@@ -187,8 +179,8 @@ const uint8_t dig6x8[] PROGMEM = {7,
         </div>
 
         <div class="controls-row">
-            <label><input type="checkbox" id="flipV" onchange="renderizarTudo()"> Inv V</label>
-            <label><input type="checkbox" id="flipH" onchange="renderizarTudo()"> Inv H</label>
+            <label title="Inverter Visualização Vertical"><input type="checkbox" id="flipV" onchange="renderizarTudo()"> Inv V</label>
+            <label title="Inverter Visualização Horizontal"><input type="checkbox" id="flipH" onchange="renderizarTudo()"> Inv H</label>
             <span>Alt: <input type="number" id="hInput" value="8" style="width:45px" onfocus="this.oldValue = this.value;" onchange="ajustarAlturaTopo(this)"> px</span>
             <span>Larg: <input type="number" id="wInput" value="4" style="width:45px" onchange="alterarLargura()"> px</span>
             
@@ -209,7 +201,7 @@ const uint8_t dig6x8[] PROGMEM = {7,
             <button onclick="exportarArquivoFonte()" style="background:#ff9800">Exportar .h</button>
         </div>
         
-        <pre id="outputCode">// O código gerado aparecerá aqui...</pre>
+        <div id="outputCode">// O código gerado aparecerá aqui...</div>
     </div>
 
     <div class="side-panel">
@@ -248,25 +240,19 @@ const uint8_t dig6x8[] PROGMEM = {7,
                     </ul>
                 </div>
         </div>
+		
     </div>
 </div>
 
 <script>
-    /**
-     * VARIÁVEIS GLOBAIS DE ESTADO
-     */
-    let dicionarioFontes = {}; // Armazena todas as fontes detectadas
-    let fonteNomeAtiva = "";   // Nome da fonte selecionada no momento
-    let indexCharAtivo = 0;    // Índice do caractere em edição
-    let isMousePressed = false; // Controle para desenho por arraste
+    let dicionarioFontes = {};
+    let fonteNomeAtiva = "";
+    let indexCharAtivo = 0;
+    let isMousePressed = false;
 
     window.onmousedown = () => { isMousePressed = true; };
     window.onmouseup = () => { isMousePressed = false; };
 
-    /**
-     * PARSER DE CÓDIGO
-     * Extrai estruturas PROGMEM do textarea.
-     */
     function carregarTodasFontes() {
         const raw = document.getElementById('inputSource').value;
         const fontRegex = /const uint8_t (\w+)\[\] PROGMEM = \{([^}]+)\};/gs;
@@ -276,12 +262,17 @@ const uint8_t dig6x8[] PROGMEM = {7,
         while ((match = fontRegex.exec(raw)) !== null) {
             const nome = match[1];
             const numeros = extrairNumeros(match[2]);
-            const bpc = numeros[0]; // Byte Per Character ou Passo
+            if (numeros.length < 1) continue;
+
+            const bpc = numeros[0]; 
             const caracteres = [];
             
+            // Lógica de importação ignorando zeros de padding existentes no código original
             for (let i = 1; i <= numeros.length - bpc; i += bpc) {
-                let bloco = numeros.slice(i, i + bpc);
-                caracteres.push({ w: bloco[0], bytes: bloco.slice(1) });
+                let larguraReal = numeros[i];
+                let blocoBytes = numeros.slice(i + 1, i + bpc);
+                // Pegamos apenas os bytes que pertencem à largura definida
+                caracteres.push({ w: larguraReal, bytes: blocoBytes.slice(0, larguraReal) });
             }
             dicionarioFontes[nome] = { bpc, caracteres };
             if (!fonteNomeAtiva) fonteNomeAtiva = nome;
@@ -291,15 +282,11 @@ const uint8_t dig6x8[] PROGMEM = {7,
     }
 
     function extrairNumeros(t) {
-        let limpo = t.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, ""); // Remove comentários
+        let limpo = t.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, "");
         const res = limpo.match(/(0x[0-9A-Fa-f]+|B[01]{8}|\b\d+\b)/g) || [];
         return res.map(v => v.startsWith('0x') ? parseInt(v, 16) : (v.startsWith('B') ? parseInt(v.substring(1), 2) : parseInt(v, 10)));
     }
 
-    /**
-     * LÓGICA DE MANIPULAÇÃO DE ALTURA (BITWISE)
-     * Desloca os bits para manter o alinhamento inferior ao redimensionar a altura.
-     */
     function ajustarAlturaTopo(input) {
         const novaH = parseInt(input.value);
         const velhaH = parseInt(input.oldValue || 8);
@@ -309,8 +296,8 @@ const uint8_t dig6x8[] PROGMEM = {7,
         if (fonte && diff !== 0) {
             fonte.caracteres.forEach(char => {
                 for (let i = 0; i < char.bytes.length; i++) {
-                    if (diff > 0) char.bytes[i] = char.bytes[i] << diff; // Sobe bits para abrir espaço no topo
-                    else char.bytes[i] = char.bytes[i] >>> Math.abs(diff); // Desce bits ao reduzir topo
+                    if (diff > 0) char.bytes[i] = (char.bytes[i] << diff);
+                    else char.bytes[i] = (char.bytes[i] >>> Math.abs(diff));
                 }
             });
         }
@@ -318,9 +305,6 @@ const uint8_t dig6x8[] PROGMEM = {7,
         renderizarTudo();
     }
 
-    /**
-     * INTERFACE E RENDERIZAÇÃO
-     */
     function atualizarMenuSelecao() {
         const sel = document.getElementById('fontSelector');
         sel.innerHTML = '';
@@ -340,10 +324,17 @@ const uint8_t dig6x8[] PROGMEM = {7,
 
     function alterarLargura() {
         const novaW = parseInt(document.getElementById('wInput').value);
-        const char = dicionarioFontes[fonteNomeAtiva].caracteres[indexCharAtivo];
+        const fonte = dicionarioFontes[fonteNomeAtiva];
+        const char = fonte.caracteres[indexCharAtivo];
+        
         char.w = novaW;
-        while (char.bytes.length < novaW) char.bytes.push(0); // Adiciona colunas vazias
-        char.bytes = char.bytes.slice(0, novaW); // Remove excesso
+        while (char.bytes.length < novaW) char.bytes.push(0);
+        char.bytes = char.bytes.slice(0, novaW);
+        
+        // Se a nova largura exceder o BPC (bytes por caractere), atualizamos o BPC global da fonte
+        if (novaW >= fonte.bpc) {
+            fonte.bpc = novaW + 1;
+        }
         renderizarTudo();
     }
 
@@ -403,7 +394,7 @@ const uint8_t dig6x8[] PROGMEM = {7,
                 if ((char.bytes[rx] >> ry) & 1) px.classList.add('on');
                 px.className = 'pixel ' + (px.classList.contains('on') ? 'on' : '');
                 
-                px.onmousedown = () => { togglePixel(px, rx, ry); };
+                px.onmousedown = (e) => { e.preventDefault(); togglePixel(px, rx, ry); };
                 px.onmouseenter = () => { if(isMousePressed) togglePixel(px, rx, ry); };
                 grid.appendChild(px);
             }
@@ -413,18 +404,15 @@ const uint8_t dig6x8[] PROGMEM = {7,
 
     function togglePixel(el, rx, ry) {
         const char = dicionarioFontes[fonteNomeAtiva].caracteres[indexCharAtivo];
-        char.bytes[rx] ^= (1 << ry); // Operação XOR para alternar bit
+        char.bytes[rx] ^= (1 << ry);
         el.classList.toggle('on');
         renderLista(dicionarioFontes[fonteNomeAtiva], parseInt(document.getElementById('hInput').value));
     }
 
-    /**
-     * OPERAÇÕES DE BIT (SHIFT VERTICAL)
-     */
     function moverVertical(dir) {
         const char = dicionarioFontes[fonteNomeAtiva].caracteres[indexCharAtivo];
         const h = parseInt(document.getElementById('hInput').value);
-        const mask = (1 << h) - 1; // Máscara para manter bits dentro da altura permitida
+        const mask = (1 << h) - 1;
         
         for (let i = 0; i < char.bytes.length; i++) {
             if (dir === -1) char.bytes[i] = (char.bytes[i] << 1) & mask;
@@ -447,18 +435,29 @@ const uint8_t dig6x8[] PROGMEM = {7,
     }
 
     /**
-     * EXPORTAÇÃO
+     * GERADOR DE CÓDIGO COM CORREÇÃO DE PADDING 0x00
      */
     function gerarCodigoFinal() {
         const f = dicionarioFontes[fonteNomeAtiva];
         if(!f) return "";
-        let out = `const uint8_t ${fonteNomeAtiva}[] PROGMEM = {${f.caracteres[0].bytes.length + 1},\n`;
-        f.caracteres.forEach(c => {
-            out += `  ${c.w}, ${c.bytes.map(b => '0x'+b.toString(16).toUpperCase().padStart(2,'0')).join(', ')}, \n`;
+        
+        let out = `<span class="keyword">const</span> <span class="type">uint8_t</span> ${fonteNomeAtiva}[] <span class="keyword">PROGMEM</span> = {<span class="number">${f.bpc}</span>,\n`;
+        
+        f.caracteres.forEach((c, idx) => {
+            let bytesOutput = [...c.bytes];
+            
+            // CORREÇÃO: Preencher com 0x00 até completar o bpc (menos 1 do byte de largura)
+            while (bytesOutput.length < (f.bpc - 1)) {
+                bytesOutput.push(0);
+            }
+            
+            const hexArr = bytesOutput.map(b => `<span class="number">0x${b.toString(16).toUpperCase().padStart(2,'0')}</span>`);
+            out += `  <span class="number">${c.w}</span>, ${hexArr.join(', ')}, <span class="comment">// #${idx}</span>\n`;
         });
+        
         out += `};`;
-        document.getElementById('outputCode').innerText = out;
-        return out;
+        document.getElementById('outputCode').innerHTML = out;
+        return document.getElementById('outputCode').innerText;
     }
 
     function exportarArquivoFonte() {
